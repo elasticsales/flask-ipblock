@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flask-ipblock',
-    version='0.2',
+    version='0.3',
     url='http://github.com/closeio/flask-ipblock',
     license='MIT',
     description='Block certain IP addresses from accessing your Flask app',
