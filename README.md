@@ -5,6 +5,14 @@ Block certain IP addresses from accessing your Flask application.
 
 Flask-IPBlock is backed by MongoDB and supports application-level caching to boost performance.
 
+Options
+=======
+You can override the default MongoDB read preference via the optional read_preference kwarg.
+
+You can limit the impact of the IP checks on your MongoDB by maintaining a local in-memory LRU cache. To do so, specify its cache_size (i.e. max number of IP addresses it can store) and cache_ttl (i.e. how many seconds each result should be cached for).
+
+To run in dry-run mode without blocking requests, set `blocking_enabled` to `False`. Set `logging_enabled` to `True` to log IPs that match blocking rules -- if enabled, will log even if `blocking_enabled` is False.
+
 Setup
 =====
 
@@ -17,11 +25,6 @@ from flask_ipblock.documents import IPNetwork
 app = Flask(__name__)
 
 # Configuration (e.g. setting up MongoEngine)
-You can override the default MongoDB read preference via the optional read_preference kwarg.
-
-You can limit the impact of the IP checks on your MongoDB by maintaining a local in-memory LRU cache. To do so, specify its cache_size (i.e. max number of IP addresses it can store) and cache_ttl (i.e. how many seconds each result should be cached for).
-
-To run in dry-run mode without blocking requests, set `blocking_enabled` to `False`. Set `logging_enabled` to `True` to log IPs that match blocking rules -- if enabled, will log even if `blocking_enabled` is False.
 
 # Set up IPBlock
 ipblock = IPBlock(app)
