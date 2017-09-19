@@ -4,8 +4,8 @@ from flask_ipblock.documents import IPNetwork
 
 class IPBlock(object):
 
-    def __init__(self, app, read_preference=None, cache_size=None,
-                 cache_ttl=None):
+    def __init__(self, app, read_preference=None, cache_size=None, cache_ttl=None,
+                 blocking_enabled=True, logging_enabled=False):
         """
         Initialize IPBlock and set up a before_request handler in the
         app.
@@ -18,8 +18,18 @@ class IPBlock(object):
         cache_size (i.e. max number of IP addresses it can store) and
         cache_ttl (i.e. how many seconds each result should be cached
         for).
+
+        To run in dry-run mode without blocking requests, set
+        blocking_enabled to False. Set logging_enabled to True
+        to log IPs that match blocking rules -- if enabled, will
+        log even if blocking_enabled is False.
         """
         self.read_preference = read_preference
+        self.blocking_enabled = blocking_enabled
+        self.logger = None
+        if logging_enabled:
+            self.logger = app.logger
+            self.block_msg = "blocking" if blocking_enabled else "blocking disabled"
 
         if cache_size and cache_ttl:
             # inline import because cachetools dependency is optional.
@@ -59,7 +69,10 @@ class IPBlock(object):
         ip = ip.rsplit(',', 1)[-1].strip()
 
         if self.matches_ip(ip):
-            return 'IP Blocked', 200
+            if self.logger is not None:
+                self.logger.info("IPBlock: matched {0}, {1}".format(ip, self.block_msg))
+            if self.blocking_enabled:
+                return 'IP Blocked', 200
 
     def matches_ip(self, ip):
         """Return True if the given IP is blacklisted, False otherwise."""
