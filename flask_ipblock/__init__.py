@@ -70,7 +70,7 @@ class IPBlock(object):
 
         if self.matches_ip(ip):
             if self.logger is not None:
-                self.logger.info("IPBlock: matched {0}, {1}".format(ip, self.block_msg))
+                self.logger.info("IPBlock: matched {}, {}".format(ip, self.block_msg))
             if self.blocking_enabled:
                 return 'IP Blocked', 200
 
